@@ -58,7 +58,7 @@ bot.on('message', async message => {
         return;
     }
     */
-   
+
     let server_id = message.guild.systemChannelID;
     if(!server_map.has(server_id))
     {
@@ -117,7 +117,8 @@ bot.on('message', async message => {
                 setTimeout(async () => {
                     if(!serv_obj.caught)
                     {
-                        serv_obj.embed.setTitle("Time is up " + serv_obj.pokemon_name + " peaced out");
+                        message.channel.send("Time is up the answer was " + serv_obj.answer);
+                        serv_obj.embed.setTitle(serv_obj.pokemon_name + " peaced out");
                         message.channel.send(serv_obj.embed);
                     }
                     serv_obj.message_count = 0; //reset message count
