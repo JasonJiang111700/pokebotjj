@@ -52,10 +52,13 @@ bot.on('ready', async () => {
 });
 
 bot.on('message', async message => {
+    /*
     if(!message.author.bot && message.guild.systemChannelID != 729112234302898259) //testing
     {
         return;
     }
+    */
+   
     let server_id = message.guild.systemChannelID;
     if(!server_map.has(server_id))
     {
