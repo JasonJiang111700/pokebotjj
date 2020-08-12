@@ -85,7 +85,7 @@ bot.on('message', async message => {
                 const add_pokemon = bot.commands.get("add_pokemon");
                 add_pokemon.execute(message.author.id,serv_obj.pokemon_name,mongobase);
                 serv_obj.caught = true;
-                message.channel.send("Seconds left until next pokemon can spawn: " + Math.floor((30*1000 - (Date.now() - serv_obj.spawn_time))/1000));
+                message.channel.send("Seconds left until next pokemon can spawn: " + Math.ceil(15 - (Date.now() - serv_obj.spawn_time)/1000));
             }
         } catch (error) {
             console.log(error);
@@ -125,7 +125,7 @@ bot.on('message', async message => {
                     }
                     serv_obj.message_count = 0; //reset message count
                     serv_obj.gamemode = "none";
-                }, 30000)
+                }, 15000)
             } catch (error) {
                 console.log(error);
             }
