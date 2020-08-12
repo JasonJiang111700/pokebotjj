@@ -90,7 +90,7 @@ bot.on('message', async message => {
         }
     }
 
-    if(serv_obj.message_count >= 20 && serv_obj.gamemode == "none")
+    if(serv_obj.message_count >= 5 && serv_obj.gamemode == "none")
     {
         const spawn_pokemon = bot.commands.get("spawn_pokemon");
         var random_time = Math.ceil(Math.random()*2500) + 2500; //1-2500 + 2500 //set a random spawn time
