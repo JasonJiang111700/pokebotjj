@@ -53,8 +53,10 @@ bot.on('ready', async () => {
 
 bot.on('message', async message => {
     /*
-    if(!message.author.bot && message.guild.systemChannelID != 729112234302898259) //testing
+    if(!message.author.bot && message.guild.systemChannelID == 729112234302898259) //testing
     {
+        x = bot.minigame_collection.get("who's that pokemon"); 
+        x.execute(message);
         return;
     }
     */
