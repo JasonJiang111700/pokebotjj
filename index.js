@@ -4,6 +4,7 @@ const bot = new Discord.Client(); //bot
 bot.commands = new Discord.Collection(); //dynamic commands
 bot.minigame_collection = new Discord.Collection(); //minigames commands
 const fs = require('fs'); //file stuff
+const game_quick_maths = require('./commands/game_quick_maths');
 var wordbase;
 
 const cooldowns = new Discord.Collection(); //cooldowns
@@ -51,10 +52,14 @@ bot.on('ready', async () => {
 });
 
 bot.on('message', async message => {
+    if(!message.author.bot && message.guild.systemChannelID != 729112234302898259) //testing
+    {
+        return;
+    }
     let server_id = message.guild.systemChannelID;
     if(!server_map.has(server_id))
     {
-        server_map.set(server_id,{answer:"",gamemode:"none",pokemon_name:"",embed:null,message_count:0});
+        server_map.set(server_id,{answer:"",gamemode:"none",pokemon_name:"",embed:null,message_count:0,caught:false,spawn_time:0});
     }
 
     let serv_obj = server_map.get(server_id);
@@ -64,7 +69,7 @@ bot.on('message', async message => {
         serv_obj.message_count++;
     }
 
-    if(message.content.startsWith("%ans") && serv_obj.gamemode != "none" && serv_obj.message_count != 0)
+    if(message.content.startsWith("%ans") && serv_obj.gamemode != "none" && !serv_obj.caught)
     {
         var response = message.content.split(" ")[1];
         try {
@@ -72,23 +77,25 @@ bot.on('message', async message => {
             {
                 serv_obj.embed.setTitle(message.author.username + " has caught a " + serv_obj.pokemon_name)
                 message.channel.send(serv_obj.embed);
-                serv_obj.message_count = 0;
-                serv_obj.gamemode = "none";
                 const add_pokemon = bot.commands.get("add_pokemon");
                 add_pokemon.execute(message.author.id,serv_obj.pokemon_name,mongobase);
+                serv_obj.caught = true;
+                message.channel.send("Seconds left until next pokemon can spawn: " + Math.floor((Date.now() - serv_obj.spawn_time)/1000));
             }
         } catch (error) {
             console.log(error);
         }
     }
 
-    if(serv_obj.message_count >= 10 && serv_obj.gamemode == "none")
+    if(serv_obj.message_count >= 5 && serv_obj.gamemode == "none")
     {
         const spawn_pokemon = bot.commands.get("spawn_pokemon");
         var random_time = Math.ceil(Math.random()*2500) + 2500; //1-2500 + 2500 //set a random spawn time
         message.channel.send("INCOMING POKEMON SPAWNING");
         serv_obj.gamemode = minigame_arr[Math.floor(Math.random() * minigame_arr.length)]; //get a random gamemode
         minigame = bot.minigame_collection.get(serv_obj.gamemode); 
+        serv_obj.caught = false; //set caught equal to false
+        serv_obj.spawn_time = Date.now();
         await message.channel.send("The minigame is ***" + serv_obj.gamemode + "***")
         setTimeout(async () => {
             try {;
@@ -101,17 +108,17 @@ bot.on('message', async message => {
                 }
                 else
                 {
-                    serv_obj.answer = await minigame.execute(); //get the answer to the minigame
+                    serv_obj.answer = await minigame.execute(message); //get the answer to the minigame
                 }
                 console.log(serv_obj.answer);
                 setTimeout(async () => {
-                    if(!serv_obj.message_count == 0)
+                    if(!serv_obj.caught)
                     {
                         serv_obj.embed.setTitle("Time is up " + serv_obj.pokemon_name + " peaced out");
                         message.channel.send(serv_obj.embed);
-                        serv_obj.message_count = 0; //reset message count
-                        serv_obj.gamemode = "none";
                     }
+                    serv_obj.message_count = 0; //reset message count
+                    serv_obj.gamemode = "none";
                 }, 30000)
             } catch (error) {
                 console.log(error);
