@@ -55,7 +55,7 @@ bot.on('message', async message => {
     /*
     if(!message.author.bot && message.guild.systemChannelID == 729112234302898259) //testing
     {
-        x = bot.minigame_collection.get("who's that pokemon"); 
+        x = bot.minigame_collection.get("trivia"); 
         x.execute(message);
         return;
     }
