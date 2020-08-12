@@ -58,11 +58,12 @@ module.exports = {
         }
         //console.log(random_num);
         //console.log(color);
-        var no_dash = poke_name.split("-");
-        no_dash = poke_name.join("");
         try {
             var response = await P.getPokemonByName(random_pokemon);
             var poke_name = response.name
+            var no_dash = poke_name.split("-");
+            no_dash = no_dash.join("");
+            console.log(no_dash);
             var embed = new Discord.MessageEmbed()
                             .setTitle(`A wild ${poke_name} has appeared`)
                             .setImage(`https://play.pokemonshowdown.com/sprites/xyani/${no_dash}.gif`)
