@@ -23,6 +23,7 @@ tier5 = gen1_tier5.concat(gen2_tier5);
 
 Matrix = [tier1,tier2,tier3,tier4,tier5];
 //probability = [50,30,14,5,1]; 
+//probability = [50,30,14,5,1]; 
 
 module.exports = {
     name: 'spawn_pokemon',

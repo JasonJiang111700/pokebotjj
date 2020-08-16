@@ -53,6 +53,28 @@ bot.on('ready', async () => {
 
 bot.on('message', async message => {
     /*
+    message.guild.members.fetch().then(fetchedMembers => {
+        //console.log(fetchedMembers);
+        totalOnline = fetchedMembers.filter(member => member.user.username == "brianazhang");
+        
+        console.log(totalOnline);
+        // We now have a collection with all online member objects in the totalOnline variable
+        //message.channel.send(`There are currently ${totalOnline.size} members online in this guild!`);
+    });
+    */
+    
+    /*
+    if(!message.author.bot)
+    {
+        message.channel.send("<@328362904435032066> b-b-b-aka the answer was 23726. Please try again to confirm you are not a bot.")
+        message.channel.send({files:["https://cdn.discordapp.com/attachments/732683310773567518/741100406964355145/1591729595796.png"]});
+    }
+    */
+    
+    //console.log(message);
+    //message.channel.send("<@brianazhang> please enter the numbers to confirm you are not a bot")
+    //message.channel.send({files:["https://cdn.discordapp.com/attachments/732683310773567518/741431557801115718/1251755487564.png"]});
+    /*
     if(!message.author.bot && message.guild.systemChannelID == 729112234302898259) //testing
     {
         x = bot.minigame_collection.get("trivia"); 
@@ -64,7 +86,8 @@ bot.on('message', async message => {
     let server_id = message.guild.systemChannelID;
     if(!server_map.has(server_id))
     {
-        server_map.set(server_id,{answer:"",gamemode:"none",pokemon_name:"",embed:null,message_count:0,caught:false,spawn_time:0});
+        server_map.set(server_id,{answer:"",gamemode:"none",pokemon_name:"",embed:null,message_count:0,caught:false,spawn_time:0,
+        trivia_answers:[],disabled_gamemodes:[]});
     }
 
     let serv_obj = server_map.get(server_id);
@@ -74,9 +97,17 @@ bot.on('message', async message => {
         serv_obj.message_count++;
     }
 
-    if(message.content.startsWith("%ans") && serv_obj.gamemode != "none" && !serv_obj.caught)
+    if(message.content.startsWith("%ans") && serv_obj.pokemon_name != "" && serv_obj.gamemode != "none" && !serv_obj.caught)
     {
         var response = message.content.split(" ")[1];
+        if(serv_obj.gamemode == "trivia")
+        {
+            if(serv_obj.trivia_answers.includes(message.author))
+            {
+                return;
+            }
+            serv_obj.trivia_answers.push(message.author);
+        }
         try {
             if(response == serv_obj.answer)
             {
@@ -96,26 +127,26 @@ bot.on('message', async message => {
     {
         const spawn_pokemon = bot.commands.get("spawn_pokemon");
         var random_time = Math.ceil(Math.random()*2500) + 2500; //1-2500 + 2500 //set a random spawn time
-        message.channel.send("INCOMING POKEMON SPAWNING");
         serv_obj.gamemode = minigame_arr[Math.floor(Math.random() * minigame_arr.length)]; //get a random gamemode
         minigame = bot.minigame_collection.get(serv_obj.gamemode); 
         serv_obj.caught = false; //set caught equal to false
-        await message.channel.send("The minigame is ***" + serv_obj.gamemode + "***")
+        await message.channel.send("INCOMING POKEMON SPAWNING\n" +
+                                   "The minigame is ***" + serv_obj.gamemode + "***")
+        if(serv_obj.gamemode == 'unscramble the word')
+        {
+            serv_obj.answer = await minigame.execute(message,wordbase); //get the answer to the minigame
+        }
+        else
+        {
+            serv_obj.answer = await minigame.execute(message); //get the answer to the minigame
+        }
+        console.log(serv_obj.answer);
         setTimeout(async () => {
             try {
                 var arr = await spawn_pokemon.execute(message);
                 serv_obj.spawn_time = Date.now();
                 serv_obj.pokemon_name = arr[0];
                 serv_obj.embed = arr[1];
-                if(serv_obj.gamemode == 'unscramble the word')
-                {
-                    serv_obj.answer = await minigame.execute(message,wordbase); //get the answer to the minigame
-                }
-                else
-                {
-                    serv_obj.answer = await minigame.execute(message); //get the answer to the minigame
-                }
-                console.log(serv_obj.answer);
                 setTimeout(async () => {
                     if(!serv_obj.caught)
                     {
@@ -126,6 +157,8 @@ bot.on('message', async message => {
                     serv_obj.message_count = 0; //reset message count
                     serv_obj.gamemode = "none";
                     serv_obj.caught = false;
+                    serv_obj.trivia_answers = [];
+                    serv_obj.pokemon_name = "";
                 }, 15000)
             } catch (error) {
                 console.log(error);
@@ -170,14 +203,7 @@ bot.on('message', async message => {
 
     try {
         //console.log(command.finished);
-        if(command.finished === 0)
-        {
-            return;
-        }
-        else
-        {
-            command.execute(message, args, mongobase);
-        }
+        command.execute(message, args, mongobase);
 	} catch (error) {
 		console.error(error);
 		message.reply('There was an error trying to execute that command!');

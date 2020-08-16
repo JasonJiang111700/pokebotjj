@@ -1,15 +1,13 @@
 module.exports = {
 	name: 'pd',
     description: 'check pokedex',
-    finished: -1,
 	async execute(message, args, mongobase) {
-        this.finished = 0;
         user = message.author.id;
         page = "Page 1 \n";
         var dbo = mongobase.db("pokebotjj2");
         var myquery = { Trainer_Id:user };
         var result = await dbo.collection("Trainers").find(myquery).toArray();
-        
+
         if(result.length === 0)
         {
            message.channel.send("You have not caught any pokemon yet " + "<@" + message.author + ">");
@@ -20,9 +18,26 @@ module.exports = {
 
         var pages = [];
 
-        message.channel.send(message.author.username + "'s Pokedex")
+        var rarity = "";
 
-        collection = result[0].Pokemon_Collection;
+        let collection = result[0].Pokemon_Collection;
+
+        if(args.length == 2)  
+        {
+            if(!(args[1] >= 1 && args[1] <= 5))
+            {
+                message.channel.send("Error please use correct parameters")
+                return
+            }
+            else
+            {
+                collection = collection.filter(poke => poke.Tier == Number(args[1]));
+                rarity = "(Tier " + args[1] + ")"
+            }
+        }
+
+        message.channel.send(message.author.username + "'s Pokedex " + rarity)
+
         collection.forEach(element => {
             if(element.Pokedex_Number >= 1 && element.Pokedex_Number <= 9)
             {
@@ -46,7 +61,7 @@ module.exports = {
 
         current = 0;
 
-        pokedex = await message.channel.send(pages[current]);
+        let pokedex = await message.channel.send(pages[current]);
         await pokedex.react('⬅️');
         await pokedex.react('➡️');
     
@@ -78,7 +93,5 @@ module.exports = {
                 await pokedex.edit(pages[current]);
             }
         });
-
-        this.finished = 1;
 	},
 };

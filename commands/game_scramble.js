@@ -4,6 +4,11 @@ module.exports = {
 	async execute(msg,wordbase) {
         var index = Math.floor(Math.random() * wordbase.length); //select a random word from the array
         var original = wordbase[index];
+        while(original.length != 5 && original.length != 6)
+        {
+            index = Math.floor(Math.random() * wordbase.length);
+            original = wordbase[index];
+        }
         var shuffle = wordbase[index].split("");
         let n = shuffle.length;
         for(var i = n - 1; i > 0; i--) {

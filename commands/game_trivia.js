@@ -3833,8 +3833,8 @@ var trivia_database = [{
 
   module.exports = {
     name: 'game_trivia',
-	description: "trivia",
-	async execute(message) {
+	  description: "trivia",
+	  async execute(message) {
         var index = Math.floor(Math.random() * trivia_database.length) //random index from trivia
         let question_set = trivia_database[index];
         let multiple_choice = `**A:** ${question_set.A}\n
