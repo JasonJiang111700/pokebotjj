@@ -17,9 +17,9 @@ var mongobase;
 var server_map = new Map();
 var minigame_arr = [];
 
-//const token = 'NzI5MTExOTU3MjEwMTM2NzE4.XwFtBA.b3Zk8y2ZlB-lJ7Mw9Y-AZDdloSM'; //pokebot_test
+//const token = ; //pokebot_test
 
-const token = 'NzMyMjkzMTE2OTQxMzAzODg5.Xw3uqg.TJknJCy-qF79N0OPEVKy0EP7Beg'; //pokebotjj2
+const token; //pokebotjj
 
 const PREFIX = '%'; //command prefix
 
